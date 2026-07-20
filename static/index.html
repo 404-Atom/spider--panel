@@ -17,6 +17,7 @@
   --nav-bg:rgba(255,23,68,.08);--nav-color:#ff1744;
   --border-glow:rgba(255,23,68,.2);--input-glow:rgba(255,23,68,.15);
   --orb1:rgba(255,23,68,.12);--orb2:rgba(124,77,255,.08);
+  --neon-rgb:255,23,68;--nav-rgb:255,23,68;
 }
 [data-accent="green"]{
   --neon:#00ff41;--neon2:#69f0ae;--glow:0 0 30px rgba(0,255,65,.15);--glow-strong:0 0 40px rgba(0,255,65,.25);
@@ -26,6 +27,7 @@
   --nav-bg:rgba(0,255,65,.08);--nav-color:#00ff41;
   --border-glow:rgba(0,255,65,.2);--input-glow:rgba(0,255,65,.15);
   --orb1:rgba(0,255,65,.12);--orb2:rgba(0,200,80,.08);
+  --neon-rgb:0,255,65;--nav-rgb:0,255,65;
 }
 [data-accent="blue"]{
   --neon:#448aff;--neon2:#82b1ff;--glow:0 0 30px rgba(68,138,255,.15);--glow-strong:0 0 40px rgba(68,138,255,.25);
@@ -35,6 +37,7 @@
   --nav-bg:rgba(68,138,255,.08);--nav-color:#448aff;
   --border-glow:rgba(68,138,255,.2);--input-glow:rgba(68,138,255,.15);
   --orb1:rgba(68,138,255,.12);--orb2:rgba(124,77,255,.08);
+  --neon-rgb:68,138,255;--nav-rgb:68,138,255;
 }
 [data-theme="light"][data-accent="red"],
 [data-theme="light"]:not([data-accent]){--bg:#f0f0f5;--bg2:rgba(255,255,255,.9);--bg3:rgba(240,240,248,.8);--txt:#1a1a2e;--txt2:#555570;--neon:#d50000;--bg-opacity:0.03;--glow:0 0 20px rgba(213,0,0,.1);--glass:rgba(255,255,255,.8)}
@@ -52,6 +55,9 @@
 @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes scaleIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes glassGlow{0%,100%{border-color:rgba(var(--neon-rgb),.2);box-shadow:0 0 20px rgba(var(--neon-rgb),.1)}50%{border-color:rgba(var(--neon-rgb),.4);box-shadow:0 0 40px rgba(var(--neon-rgb),.2)}}
+@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGreen{0%,100%{opacity:1;box-shadow:0 0 8px rgba(0,230,118,.5)}50%{opacity:.7;box-shadow:0 0 4px rgba(0,230,118,.3)}}
 
 body{
   font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
@@ -75,10 +81,12 @@ body{
 .login-bg .o1{width:500px;height:500px;background:var(--orb1);top:-150px;left:-100px}
 .login-bg .o2{width:400px;height:400px;background:var(--orb2);bottom:-100px;right:-80px;animation-delay:-3s}
 .login-card{
-  position:relative;z-index:1;background:var(--glass);backdrop-filter:blur(20px);
+  position:relative;z-index:1;background:var(--glass);backdrop-filter:blur(30px) saturate(180%);
   border:1px solid var(--bg3);border-radius:20px;padding:44px 36px;
   width:100%;max-width:420px;box-shadow:var(--glow);animation:scaleIn .5s ease;
+  transform-style:preserve-3d;
 }
+.login-card:hover{box-shadow:0 0 50px rgba(var(--neon-rgb), .3),var(--glow-strong)}
 .login-logo{text-align:center;margin-bottom:16px}
 .login-logo img{width:60px;height:60px;filter:var(--logo-shadow);mix-blend-mode:screen}
 .login-title{
@@ -119,10 +127,12 @@ body{
   width:250px;background:var(--glass);backdrop-filter:blur(24px);
   border-left:1px solid var(--bg3);display:flex;flex-direction:column;
   position:fixed;top:0;bottom:0;right:0;z-index:100;transition:transform .35s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto;overflow-x:hidden;
+  overflow-y:auto;overflow-x:hidden;box-shadow:0 0 40px rgba(0,0,0,.3)
 }
-.sb-brand{padding:22px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bg3)}
-.sb-brand img{width:40px;height:40px;mix-blend-mode:screen}
+.sidebar:hover{box-shadow:0 0 60px rgba(var(--neon-rgb),.15)}
+.sb-brand{padding:22px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bg3);transform-style:preserve-3d}
+.sb-brand:hover{box-shadow:0 0 20px rgba(var(--neon-rgb),.1)}
+.sb-brand img{width:40px;height:40px;mix-blend-mode:screen;transform:translateZ(5px)}
 .sb-brand-t{font-size:17px;font-weight:800;letter-spacing:3px}
 .sb-brand-t span{color:var(--neon)}.sb-brand-s{font-size:10px;color:var(--txt2);letter-spacing:5px;margin-top:2px}
 .sb-nav{flex:1;padding:12px 0;overflow-y:auto}
@@ -130,10 +140,12 @@ body{
   padding:12px 22px;display:flex;align-items:center;gap:10px;cursor:pointer;
   font-size:13px;font-weight:500;color:var(--txt2);transition:all .2s;
   border-right:3px solid transparent;margin:2px 0;
+  transform-style:preserve-3d;perspective:500px;
 }
-.nav-item:hover{color:var(--txt);background:rgba(255,255,255,.03)}
-.nav-item.active{color:var(--nav-color);background:var(--nav-bg);border-right-color:var(--nav-color)}
-.nav-item .nav-ic{width:20px;height:20px;display:inline-flex;flex-shrink:0}
+.nav-item:hover{color:var(--txt);background:rgba(255,255,255,.03);transform:translateX(-3px) translateZ(2px);box-shadow:0 4px 12px rgba(var(--neon-rgb),.1)}
+.nav-item.active{color:var(--nav-color);background:var(--nav-bg);border-right-color:var(--nav-color);transform:translateX(0) translateZ(5px);box-shadow:0 0 15px rgba(var(--nav-rgb),.3)}
+.nav-item .nav-ic{width:20px;height:20px;display:inline-flex;flex-shrink:0;transform-style:preserve-3d;transition:transform .3s filter .3s;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.nav-item:hover .nav-ic{transform:perspective(500px) rotateY(-5deg) translateZ(5px)}
 .sb-foot{padding:16px 22px;border-top:1px solid var(--bg3);font-size:11px;color:var(--txt2)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-left:6px;animation:pulse 2s infinite}
 
@@ -150,11 +162,13 @@ body{
 
 /* Cards - Glass */
 .panel{
-  background:var(--glass);backdrop-filter:blur(16px);
+  background:var(--glass);backdrop-filter:blur(20px) saturate(180%);
   border:1px solid var(--bg3);border-radius:16px;padding:22px;
   margin-bottom:16px;transition:all .3s;animation:fadeIn .4s ease;
+  transform-style:preserve-3d;
 }
-.panel:hover{border-color:var(--border-glow);box-shadow:var(--glow)}
+.panel:hover{border-color:var(--border-glow);box-shadow:0 0 30px rgba(var(--neon-rgb), 0.15),var(--glow)}
+.panel:focus-within{animation:borderGlow .8s ease-in-out infinite}
 .panel-h{
   font-size:15px;font-weight:700;margin-bottom:14px;
   display:flex;align-items:center;gap:8px;
@@ -164,12 +178,14 @@ body{
 /* Stats */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 .stat{
-  background:var(--glass);backdrop-filter:blur(12px);
+  background:var(--glass);backdrop-filter:blur(14px) saturate(160%);
   border:1px solid var(--bg3);border-radius:16px;padding:20px 16px;
   text-align:center;transition:all .3s;animation:fadeIn .5s ease;
+  transform-style:preserve-3d;perspective:500px;
 }
-.stat:hover{border-color:var(--border-glow);transform:translateY(-3px);box-shadow:var(--glow)}
-.stat-icon{margin-bottom:8px;color:var(--neon)}
+.stat:hover{border-color:var(--border-glow);transform:translateY(-3px) translateZ(10px);box-shadow:0 0 30px rgba(var(--neon-rgb), 0.15),var(--glow)}
+.stat-icon{margin-bottom:8px;color:var(--neon);transform:translateZ(10px);filter:drop-shadow(0 4px 8px rgba(var(--neon-rgb), 0.2));transition:transform .3s}
+.stat:hover .stat-icon{transform:translateZ(20px) scale(1.1)}
 .stat-v{font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .stat-l{font-size:11px;color:var(--txt2);margin-top:4px}
 
@@ -186,13 +202,47 @@ body{
 .btn-gr{background:rgba(0,230,118,.1);color:var(--green)}.btn-b{background:rgba(68,138,255,.1);color:var(--blue)}
 .btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
 .btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:10px}
+/* enhance stat cards with hover glass */
+.stat:hover{box-shadow:0 0 30px rgba(var(--neon-rgb),.15),var(--glow);background:rgba(var(--neon-rgb),.02)}
+.stat-icon{filter:drop-shadow(0 2px 8px rgba(var(--neon-rgb),.2))}
+
+/* enhance modals with better backdrop */
+.modal{
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(16px) saturate(180%);
+}
+
+/* table row glass hover */
+tr:hover td{background:rgba(var(--neon-rgb),.02);backdrop-filter:blur(10px)}
+
+/* sidebar inner glow */
+.sidebar {
+  box-shadow: 0 0 40px rgba(0,0,0,.3);
+  background: linear-gradient(180deg, var(--glass), rgba(var(--bg3),.5));
+}
+.sidebar:hover {
+  box-shadow: 0 0 60px rgba(var(--neon-rgb),.15);
+}
+
+/* enhanced panel backgrounds */
+.panel, .stat, .modal-c {
+  background: linear-gradient(135deg, rgba(var(--bg2),.8), rgba(var(--bg3),.4));
+  border: 1px solid rgba(var(--neon-rgb),.1);
+}
+
+/* input focus with border glow animation */
+.f-g input:focus, .f-g select:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 0 3px rgba(var(--neon-rgb),.2);
+  animation: borderGlow 1s ease-in-out infinite;
+}
 
 /* Tables */
 .tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
 table{width:100%;border-collapse:collapse}
 th{text-align:right;padding:12px;font-size:11px;color:var(--txt2);font-weight:600;border-bottom:2px solid var(--bg3)}
 td{padding:12px;font-size:13px;border-bottom:1px solid var(--bg3)}
-tr:hover td{background:rgba(255,255,255,.02)}
+tr:hover td{background:rgba(var(--neon-rgb),.02);backdrop-filter:blur(10px)}
 tr{animation:fadeIn .3s ease}
 .act-row{display:flex;gap:4px;flex-wrap:wrap}
 .badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600}
@@ -202,7 +252,7 @@ tr{animation:fadeIn .3s ease}
 .badge-p{background:rgba(124,77,255,.15);color:var(--purple)}
 .empty{text-align:center;padding:40px;color:var(--txt2);font-size:13px}
 
-.pbar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:5px}
+.pbar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:5px;backdrop-filter:blur(4px)}
 .pbar-f{height:100%;background:var(--grad);border-radius:3px;transition:width .5s ease}
 
 .srv-bar{margin-bottom:6px}.srv-bar-h{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px}
@@ -216,10 +266,10 @@ tr{animation:fadeIn .3s ease}
 }
 .modal.show{display:flex;animation:fadeIn .2s ease}
 .modal-c{
-  background:var(--glass);backdrop-filter:blur(24px);
+  background:var(--glass);backdrop-filter:blur(30px) saturate(180%);
   border:1px solid var(--bg3);border-radius:20px;padding:28px;
   width:100%;max-width:480px;max-height:85vh;overflow-y:auto;
-  box-shadow:var(--glow);animation:scaleIn .3s ease;
+  box-shadow:var(--glow);animation:scaleIn .3s ease;transform-style:preserve-3d;
 }
 .modal-t{font-size:19px;font-weight:700;margin-bottom:18px}
 .modal-t .glow{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -289,12 +339,21 @@ tr{animation:fadeIn .3s ease}
 .set-lbl{font-size:13px;color:var(--txt2)}.set-val{font-size:13px;font-weight:600}
 
 /* Sub cards */
-.sub-card{background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:10px;transition:all .2s}
-.sub-card:hover{border:1px solid var(--border-glow)}
+.sub-card{background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:10px;transition:all .2s;animation:fadeIn .4s ease}
+.sub-card:hover{border:1px solid var(--border-glow);box-shadow:0 0 20px rgba(var(--neon-rgb),.1);transform:translateY(-1px)}
 .sub-card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .sub-card-name{font-size:14px;font-weight:700}
 .sub-link{width:100%;padding:8px 12px;background:rgba(0,0,0,.3);border:1px solid var(--bg3);border-radius:8px;font-family:monospace;font-size:11px;direction:ltr;text-align:left;color:var(--txt2);margin-bottom:8px}
 .sub-acts{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Modern UI utility classes — fade / glass-hover / user-count badge / motion-blur */
+.p-fade{animation:scaleIn .4s ease-out}
+.g-hover{transition:all .3s cubic-bezier(.4,0,.2,1)}
+.g-hover:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(var(--neon-rgb),.2)}
+.user-count-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3);border-radius:20px;font-size:11px;font-weight:700;animation:pulseGreen 3s infinite}
+.stat-count{animation:countUp .6s ease-out}
+.motion-blur{transition:filter .3s,transform .3s}
+.motion-blur:active{filter:blur(.6px)}
 
 /* Theme selector in settings */
 .theme-dots{display:flex;gap:8px}
@@ -376,16 +435,19 @@ tr{animation:fadeIn .3s ease}
         داشبورد
       </div>
       <div class="nav-item" onclick="switchTab('users',this)">
-        <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m8-10a4 4 0 100-8 4 4 0 000 8zm13 10v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/></svg></span>
         کاربران
       </div>
       <div class="nav-item" onclick="switchTab('inbounds',this)">
         <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
         اینباندها
       </div>
-      <div class="nav-item" onclick="switchTab('spider-ip',this)">
-        <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></span>
-        Spider IP
+      <div class="nav-item" onclick="switchTab('subscriptions',this)">
+        <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16M8 6h.5M8 10h.5M8 14h.5M8 18h.5M16 6h.5M16 10h.5M16 14h.5M16 18h.5"/></svg></span>
+        Subscriptions
+      </div>
+      <div class="nav-item" onclick="switchTab('telegram',this)">
+        <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 9v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 9z"/><path d="m3.15 9.88 7.51 4.64a1 1 0 0 0 1.13-.31l5.28-5.28"/><path d="m12.72 11.08 5.84 3.56"/><path d="m9 9.5 5.5 5.5"/></svg></span>
+        Telegram Bot
       </div>
       <div class="nav-item" onclick="switchTab('settings',this)">
         <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
@@ -451,74 +513,72 @@ tr{animation:fadeIn .3s ease}
         </div>
       </div>
 
-      <!-- SPIDER IP TAB -->
-      <div class="tab-content hidden" id="tab-spider-ip">
-        <!-- Server Resources -->
-        <div class="panel" style="margin-bottom:14px">
-          <div class="panel-h"><span class="glow">Server Resources</span></div>
-          <div id="neon-bars">
-            <div class="set-row" style="flex-direction:column;align-items:stretch;gap:6px">
-              <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--txt2)">CPU</span><span id="cpu-val" style="color:var(--neon);font-family:monospace">--</span></div>
-              <div class="pbar" style="height:8px;border-radius:4px"><div class="pbar-f" id="cpu-bar" style="width:0%;background:linear-gradient(90deg,var(--neon),#ff6b6b);border-radius:4px;transition:width .5s"></div></div>
-            </div>
-            <div class="set-row" style="flex-direction:column;align-items:stretch;gap:6px;margin-top:10px">
-              <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--txt2)">RAM</span><span id="ram-val" style="color:#ffab00;font-family:monospace">--</span></div>
-              <div class="pbar" style="height:8px;border-radius:4px"><div class="pbar-f" id="ram-bar" style="width:0%;background:linear-gradient(90deg,#ffab00,#ff6b00);border-radius:4px;transition:width .5s"></div></div>
-            </div>
-            <div class="set-row" style="flex-direction:column;align-items:stretch;gap:6px;margin-top:10px">
-              <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--txt2)">Disk</span><span id="disk-val" style="color:var(--blue);font-family:monospace">--</span></div>
-              <div class="pbar" style="height:8px;border-radius:4px"><div class="pbar-f" id="disk-bar" style="width:0%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:4px;transition:width .5s"></div></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-top:8px">
-              <span>Network: <b id="net-sent" style="color:var(--neon)">--</b> up / <b id="net-recv" style="color:var(--blue)">--</b> down</span>
-              <span>Uptime: <b id="sys-uptime" style="color:var(--gold)">--</b></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Railway IP Scanner -->
-        <div class="panel" style="margin-bottom:14px">
-          <div class="panel-h"><span class="glow">Railway IP Scanner</span></div>
-          <div style="margin-bottom:10px;font-size:11px;color:var(--txt2);line-height:1.5">
-            Ping Railway region endpoints to find the fastest deployment location.
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px">
-            <button class="btn btn-p" onclick="scanRailwayRegions()" style="flex:1;justify-content:center">Scan Railway Regions</button>
-            <button class="btn btn-g" onclick="getServerIP()" style="flex:1;justify-content:center">Show My IP</button>
-          </div>
-          <div id="rwProgress" style="display:none;margin-bottom:10px">
-            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span id="rwStatus">...</span><span id="rwCount" style="color:var(--neon)">0/0</span></div>
-            <div class="pbar"><div class="pbar-f" id="rwBar" style="width:0%"></div></div>
-          </div>
-          <div id="rwResults" style="display:none;margin-top:12px">
-            <div style="font-size:12px;font-weight:600;margin-bottom:10px">Ping Results:</div>
-            <div id="rwIpList" style="display:flex;flex-direction:column;gap:6px;max-height:350px;overflow-y:auto"></div>
-          </div>
-        </div>
-
-        <!-- Config Builder -->
+      <!-- TELEGRAM BOT TAB -->
+      <div class="tab-content hidden" id="tab-telegram">
         <div class="panel">
-          <div class="panel-h"><span class="glow">Config Builder</span></div>
-          <div class="f-r" style="margin-bottom:10px">
-            <div class="f-g"><label style="font-size:10px;color:var(--txt2)">UUID</label><div style="display:flex;gap:6px"><input type="text" id="cfgUUID" style="font-size:11px;font-family:monospace"><button class="btn btn-sm btn-g" type="button" onclick="genCfgUUID()">Gen</button></div></div>
-            <div class="f-g"><label style="font-size:10px;color:var(--txt2)">SNI</label><input type="text" id="cfgSNI" value="speedtest.net" style="font-size:11px"></div>
+          <div class="panel-h" style="justify-content:space-between">
+            <span class="glow">Telegram Bot Settings</span>
+            <span class="badge" id="tg-status-badge" style="background:rgba(255,23,68,.15);color:var(--red)"><span class="dot" id="tg-status-dot" style="margin-left:6px;background:var(--red)"></span> <span id="tg-status-text">متوقف</span></span>
           </div>
-          <div class="f-r" style="margin-bottom:10px">
-            <div class="f-g"><label style="font-size:10px;color:var(--txt2)">Security</label><select id="cfgSec"><option value="tls">TLS</option><option value="none">None</option></select></div>
-            <div class="f-g"><label style="font-size:10px;color:var(--txt2)">Network</label><select id="cfgNet"><option value="ws">WS</option><option value="tcp">TCP</option></select></div>
-          </div>
-          <div class="f-g" style="margin-bottom:10px"><label style="font-size:10px;color:var(--txt2)">Path</label><input type="text" id="cfgPath" value="/" style="font-size:11px;font-family:monospace"></div>
-          <div class="f-g" style="margin-bottom:10px"><label style="font-size:10px;color:var(--txt2)">IPs (one per line, IP:Port)</label><textarea id="cfgIPs" rows="3" style="font-size:11px;font-family:monospace;background:rgba(0,0,0,.2);border:1px solid var(--border);color:var(--txt);width:100%;border-radius:8px;padding:8px;resize:vertical"></textarea></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-p" onclick="rwBuildConfig()">Build Config</button>
-            <button class="btn btn-sm btn-gr" onclick="cfImportFromScanner()">Import from Scanner</button>
-          </div>
-          <div id="cfgOutput" style="display:none;margin-top:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <span id="cfgOutLabel" style="font-size:11px;font-weight:700;color:var(--green)"></span>
-              <div style="display:flex;gap:4px"><button class="btn btn-sm btn-gr" onclick="rwCopyCfg()">Copy</button><button class="btn btn-sm btn-g" onclick="rwDownloadCfg()">Download</button></div>
+          <form onsubmit="saveTelegramBot(event)">
+            <div class="f-g">
+              <label>Bot Token</label>
+              <div style="display:flex;gap:6px">
+                <input type="password" id="tg-token" placeholder="123456:ABC-DEF..." dir="ltr" style="flex:1">
+                <button type="button" class="btn btn-sm btn-g" onclick="toggleTgToken()">نمایش</button>
+              </div>
             </div>
-            <pre id="cfgPre" style="background:rgba(0,0,0,.3);border-radius:8px;padding:12px;font-family:monospace;font-size:10px;direction:ltr;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;color:var(--txt)"></pre>
+            <div class="f-g">
+              <label>Admin Telegram IDs (comma-separated)</label>
+              <input type="text" id="tg-admins" placeholder="123456789, 987654321" dir="ltr">
+            </div>
+            <div class="f-g">
+              <label>Webhook URL</label>
+              <input type="text" id="tg-webhook" placeholder="https://your-domain.com/webhook" dir="ltr">
+            </div>
+            <div class="f-g">
+              <label>Currency</label>
+              <input type="text" id="tg-currency" placeholder="USD" dir="ltr" value="USD">
+            </div>
+            <div class="f-g">
+              <label>Plans (one per line: name,price,duration_days)</label>
+              <textarea id="tg-plans" rows="5" placeholder="Basic,5,30&#10;Pro,15,90&#10;Premium,30,365" dir="ltr" style="font-family:monospace"></textarea>
+            </div>
+            <div class="set-row" style="margin-top:8px">
+              <span class="set-lbl">Mock Mode (for testing)</span>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="checkbox" id="tg-mock" style="width:auto">
+                <span style="font-size:12px;color:var(--txt2)">Enable mock mode</span>
+              </label>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+              <button type="button" class="btn btn-gr" onclick="startTelegramBot()">▶ Start Bot</button>
+              <button type="button" class="btn btn-r" onclick="stopTelegramBot()">■ Stop Bot</button>
+              <button type="button" class="btn btn-b" onclick="testTelegramConnection()">Test Connection</button>
+              <button type="submit" class="btn btn-p" style="margin-right:auto">💾 Save Settings</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><span class="glow">Bot Status</span></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+            <div style="background:var(--bg3);border-radius:12px;padding:14px;text-align:center">
+              <div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Uptime</div>
+              <div style="font-size:18px;font-weight:700;color:var(--neon)" id="tg-uptime">0s</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:12px;padding:14px;text-align:center">
+              <div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Messages Handled</div>
+              <div style="font-size:18px;font-weight:700;color:var(--neon)" id="tg-messages">0</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:12px;padding:14px;text-align:center">
+              <div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Active Users</div>
+              <div style="font-size:18px;font-weight:700;color:var(--neon)" id="tg-active-users">0</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:12px;padding:14px;text-align:center">
+              <div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Mode</div>
+              <div style="font-size:18px;font-weight:700" id="tg-mode">-</div>
+            </div>
           </div>
         </div>
       </div>
@@ -550,11 +610,21 @@ tr{animation:fadeIn .3s ease}
 
         <div class="panel">
           <div class="panel-h"><span class="glow">Panel Music</span></div>
-          <div class="set-row"><span class="set-lbl">Background Music</span>
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt2)">
+          <div style="display:flex;gap:8px;align-items:center">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
               <input type="checkbox" id="audio-autoplay" checked onchange="togglePanelAudio()">
-              Auto-play music (static/music-panel.mp3)
+              Auto-play music
             </label>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-sm btn-g" onclick="togglePlayAudio()">▶ Play</button>
+              <button class="btn btn-sm btn-g" onclick="toggleShuffle()">🔀 Shuffle</button>
+              <button class="btn btn-sm btn-g" onclick="toggleRepeat()">🔁 Repeat</button>
+              <button class="btn btn-sm btn-r" onclick="pauseAudio()">■ Pause</button>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--txt2)">
+            <div id="audio-status">No audio files found</div>
+            <div id="audio-current" style="margin-top:4px;font-family:monospace"></div>
           </div>
           <audio id="panel-audio-player" loop style="display:none"></audio>
         </div>
@@ -569,11 +639,39 @@ tr{animation:fadeIn .3s ease}
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main-area -->
-</div><!-- /app-wrap -->
+      <!-- Subscriptions TAB -->
+      <div class="tab-content hidden" id="tab-subscriptions">
+        <div class="panel p-fade">
+          <div class="panel-h" style="justify-content:space-between">
+            <span class="glow">📦 اشتراک‌ها</span>
+            <button class="btn btn-sm btn-p g-hover" onclick="loadSubscriptions()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              بروزرسانی
+            </button>
+          </div>
 
-<!-- ═══════ MODALS ═══════ -->
+          <!-- Subscriptions grid -->
+          <div id="subscriptions-container">
+            <div style="text-align:center;padding:40px;color:var(--txt2);font-size:13px">
+              <div style="font-size:40px;margin-bottom:12px;opacity:.3">📦</div>
+              <div>در حال بارگذاری اشتراک‌ها...</div>
+            </div>
+          </div>
+
+          <!-- All subs list with user counts -->
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bg3)">
+            <div style="font-size:11px;color:var(--txt2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              تعداد کاربران وصل به هر اشتراک
+            </div>
+            <div id="all-subscriptions-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+        </div><!-- /content -->
+      </div><!-- /main-area -->
+    </div><!-- /app-wrap -->
 
 <!-- CREATE USER -->
 <div class="modal" id="mod-user"><div class="modal-c">
@@ -903,7 +1001,8 @@ function switchTab(tab, el) {
   if (tab === 'dashboard') loadDashboard();
   if (tab === 'users') loadUsers();
   if (tab === 'inbounds') loadInbounds();
-  if (tab === 'spider-ip') loadSpiderIP();
+  if (tab === 'subscriptions') loadSubscriptions();
+  if (tab === 'telegram') loadTelegramSettings();
   // Close sidebar on mobile
   closeSidebar();
 }
@@ -917,6 +1016,151 @@ async function loadAll() {
   loadDashboard();
   loadUsers();
   loadInbounds();
+  loadTelegramSettings();
+}
+
+// ─── Telegram Bot ───
+var telegramBotStatus = 'stopped';
+var telegramBotData = { plans: [], uptime: 0, messages_handled: 0, active_users: 0, mode: 'mock' };
+
+async function loadTelegramSettings() {
+  try {
+    var d = await api('/api/telegram/settings');
+    if (d) {
+      telegramBotData = d;
+      telegramBotStatus = d.enabled ? 'running' : 'stopped';
+      // Normalize plans format from dict to array if needed
+      if (telegramBotData.plans && typeof telegramBotData.plans === 'object') {
+        if (Array.isArray(telegramBotData.plans)) {
+          // Already an array, use as is
+          // Ensure each plan has required fields
+          telegramBotData.plans = telegramBotData.plans.map(p => ({
+            name: (p && p.name) || '',
+            price: (p && p.price) || 0,
+            duration_days: (p && p.duration_days) || 0
+          }));
+        } else {
+          // Convert dict to array
+          telegramBotData.plans = Object.entries(telegramBotData.plans).map(([name, plan]) => ({
+            name: name,
+            price: plan.price || 0,
+            duration_days: plan.duration_days || 0
+          }));
+        }
+      }
+      updateTelegramUI();
+    }
+    // Still fetch status separately
+    try {
+      var st = await api('/api/telegram/status');
+      if (st) {
+        telegramBotStatus = st.running ? 'running' : 'stopped';
+        telegramBotData.uptime = (st.stats || {}).started_at ? Math.floor((Date.now() - new Date(st.stats.started_at)) / 1000) : 0;
+        telegramBotData.messages_handled = (st.stats || {}).messages_sent || 0;
+        telegramBotData.active_users = (st.stats || {}).users_count || 0;
+        telegramBotData.mode = st.mock_mode ? 'Mock' : 'Live';
+      }
+    } catch(e2) {}
+  } catch(e) {
+    // If API fails, use defaults and mock data
+    console.warn('Failed to load Telegram settings:', e);
+  }
+}
+
+async function saveTelegramBot(event) {
+  event.preventDefault();
+  try {
+    var body = {
+      bot_token: $id('tg-token').value || '',
+      admin_ids: $id('tg-admins').value ? $id('tg-admins').value.split(',').map(Number).filter(function(n){return !isNaN(n)}) : [],
+      webhook_url: $id('tg-webhook').value || '',
+      currency: $id('tg-currency').value || 'USD',
+      plans: $id('tg-plans').value ? $id('tg-plans').value.split('\n').filter(function(l){return l.trim()}).map(function(l) {
+        var parts = l.split(',').map(function(p){return p.trim()});
+        return {
+          name: parts[0] || '',
+          price: parseFloat(parts[1]) || 0,
+          duration_days: parseInt(parts[2]) || 0
+        };
+      }) : [],
+      enabled: true,
+      mock_mode: $id('tg-mock').checked || false
+    };
+    var r = await api('/api/telegram/settings', {method: 'POST', body: body});
+    toast('تنظیمات ربات تلگرام ذخیره شد', 'ok');
+    loadTelegramSettings();
+  } catch(e) {
+    toast(e.message || 'خطا در ذخیره تنظیمات ربات', 'err');
+  }
+}
+
+function updateTelegramUI() {
+  var bot = telegramBotData;
+  $id('tg-token').value = bot.bot_token || '';
+  $id('tg-admins').value = bot.admin_ids ? bot.admin_ids.join(', ') : '';
+  $id('tg-webhook').value = bot.webhook_url || '';
+  $id('tg-currency').value = bot.currency || 'USD';
+  $id('tg-plans').value = (bot.plans || []).map(p =>
+    p.name + ',' + p.price + ',' + p.duration_days
+  ).join('\n');
+  $id('tg-mock').checked = bot.mock_mode || false;
+
+  if (telegramBotStatus === 'running') {
+    $id('tg-status-badge').style.background = 'rgba(0,230,118,.15)';
+    $id('tg-status-badge').style.color = 'var(--green)';
+    $id('tg-status-dot').style.background = 'var(--green)';
+    $id('tg-status-text').textContent = 'در حال اجرا';
+  } else {
+    $id('tg-status-badge').style.background = 'rgba(255,23,68,.15)';
+    $id('tg-status-badge').style.color = 'var(--red)';
+    $id('tg-status-dot').style.background = 'var(--red)';
+    $id('tg-status-text').textContent = 'متوقف';
+  }
+  $id('tg-uptime').textContent = fmtUptime(bot.uptime || 0);
+  $id('tg-messages').textContent = bot.messages_handled || 0;
+  $id('tg-active-users').textContent = bot.active_users || 0;
+  $id('tg-mode').textContent = bot.mode || 'mock';
+}
+
+function refreshTelegramUI() {
+  var bot = telegramBotData;
+  var mins = Date.now() - (bot.start_time ? new Date(bot.start_time).getTime() : Date.now());
+  bot.uptime = Math.floor(mins / 1000);
+  bot.messages_handled = (bot.messages_handled || 0) + (Math.random() * 5);
+  bot.active_users = (bot.messages_handled || 0) / 10;
+  updateTelegramUI();
+}
+
+function toggleTgToken() {
+  var input = $id('tg-token');
+  input.type = input.type === 'password' ? 'text' : 'password';
+  var btn = $id('tg-token').nextElementSibling;
+  btn.textContent = input.type === 'text' ? 'مخفی' : 'نمایش';
+}
+
+async function startTelegramBot() {
+  try {
+    var r = await api('/api/telegram/start', {method: 'POST'});
+    toast('ربات تلگرام شروع شد', 'ok');
+    telegramBotStatus = 'running';
+    updateTelegramUI();
+  } catch(e) { toast(e.message || 'خطا در شروع ربات', 'err'); }
+}
+
+async function stopTelegramBot() {
+  try {
+    var r = await api('/api/telegram/stop', {method: 'POST'});
+    toast('ربات تلگرام توقف یافت', 'ok');
+    telegramBotStatus = 'stopped';
+    updateTelegramUI();
+  } catch(e) { toast(e.message || 'خطا در توقف ربات', 'err'); }
+}
+
+async function testTelegramConnection() {
+  try {
+    var r = await api('/api/telegram/test', {method: 'POST'});
+    toast('ارتباط با تلگرام برقرار شد', 'ok');
+  } catch(e) { toast(e.message || 'خطا در تست اتصال', 'err'); }
 }
 
 // ─── Dashboard ───
@@ -936,19 +1180,19 @@ async function loadDashboard() {
   try {
     var s = await api('/stats');
     var html = '<div class="stats">';
-    html += statCard(iconUsers, '<span id="dash-users">' + s.active_users + ' / ' + s.total_users + '</span>', 'کاربران فعال/کل');
-    html += statCard(iconTraffic, '<span id="dash-traffic">' + fmtBytes(s.traffic_usage_gb * 1073741824) + '</span>', 'ترافیک مصرفی');
-    html += statCard(iconConn, '<span id="dash-conn">' + (s.active_connections || '۰') + '</span>', 'اتصالات فعال');
+    html += statCard(iconUsers, '<span id="dash-users">' + ((s.active_users||0) + ' / ' + (s.total_users||0)) + '</span>', 'کاربران فعال/کل');
+    html += statCard(iconTraffic, '<span id="dash-traffic">' + fmtBytes((s.traffic_usage_gb||0) * 1073741824) + '</span>', 'ترافیک مصرفی');
+    html += statCard(iconConn, '<span id="dash-conn">' + (s.active_connections||0) + '</span>', 'اتصالات فعال');
     html += statCard(iconUptime, '<span id="dash-uptime">...</span>', 'زمان فعالیت');
     html += '</div>';
     html += '<div class="panel"><div class="panel-h" style="align-items:center"><span class="glow">وضعیت زنده سرور</span><span class="badge badge-g" style="margin-right:auto;font-size:9px;animation:pulse 1.5s infinite">● LIVE</span></div>';
-    html += '<div class="srv-bar"><div class="srv-bar-h"><strong>پردازنده</strong><span id="live-cpu">--</span>%</div><div class="srv-bar-bg"><div class="srv-bar-f" id="bar-cpu" style="width:0%"></div></div></div>';
-    html += '<div class="srv-bar"><div class="srv-bar-h"><strong>حافظه رم</strong><span id="live-ram">--</span></div><div class="srv-bar-bg"><div class="srv-bar-f" id="bar-ram" style="width:0%"></div></div></div>';
-    html += '<div class="srv-bar"><div class="srv-bar-h"><strong>دیسک</strong><span id="live-disk">--</span></div><div class="srv-bar-bg"><div class="srv-bar-f" id="bar-disk" style="width:0%"></div></div></div>';
+    html += '<div class="srv-bar"><div class="srv-bar-h"><strong>پردازنده</strong><span id="live-cpu">0%</span></div><div class="srv-bar-bg"><div class="srv-bar-f" id="bar-cpu" style="width:0%;background:linear-gradient(90deg,var(--neon),#ff6b6b)"></div></div></div>';
+    html += '<div class="srv-bar"><div class="srv-bar-h"><strong>حافظه رم</strong><span id="live-ram">0 / 0 GB</span></div><div class="srv-bar-bg"><div class="srv-bar-f" id="bar-ram" style="width:0%;background:linear-gradient(90deg,var(--neon),#ff6b6b)"></div></div></div>';
+    html += '<div class="srv-bar"><div class="srv-bar-h"><strong>دیسک</strong><span id="live-disk">0 / 0 GB</span></div><div class="srv-bar-bg"><div class="srv-bar-f" id="bar-disk" style="width:0%;background:linear-gradient(90deg,var(--neon),#ff6b6b)"></div></div></div>';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--txt2);margin-top:12px;padding-top:10px;border-top:1px solid var(--bg3)">';
-    html += '<span>ارسال: <strong style="color:var(--neon)" id="live-net-sent">...</strong></span>';
-    html += '<span>دریافت: <strong style="color:var(--neon)" id="live-net-recv">...</strong></span>';
-    html += '<span>Uptime: <strong style="color:var(--neon)" id="live-uptime">...</strong></span>';
+    html += '<span>ارسال: <strong style="color:var(--neon)" id="live-net-sent">0 MB</strong></span>';
+    html += '<span>دریافت: <strong style="color:var(--neon)" id="live-net-recv">0 MB</strong></span>';
+    html += '<span>Uptime: <strong style="color:var(--neon)" id="live-uptime">0s</strong></span>';
     html += '</div></div>';
     $id('dashboard-content').innerHTML = html;
     startLiveStats();
@@ -997,17 +1241,17 @@ function renderUsers() {
   var html = '<div class="tbl"><table><thead><tr><th>نام کاربری</th><th>حجم</th><th>انقضا</th><th>اتصال</th><th>وضعیت</th><th>اینباند</th><th>عملیات</th></tr></thead><tbody>';
   for (var i = 0; i < ALL_USERS.length; i++) {
     var u = ALL_USERS[i];
-    var used = u.traffic_used_bytes || 0, limit = u.traffic_limit_bytes || 0;
+    var used = Number(u.traffic_used_bytes) || 0, limit = Number(u.traffic_limit_bytes) || 0;
     var pct = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
     var exp = u.expire_at ? Math.ceil((new Date(u.expire_at) - new Date()) / 86400000) : null;
-    var expText = exp === null ? 'نامحدود' : exp <= 0 ? '<span style="color:var(--red)">منقضی</span>' : exp + ' روز';
+    var expText = exp === null || isNaN(exp) ? 'نامحدود' : exp <= 0 ? '<span style="color:var(--red)">منقضی</span>' : exp + ' روز';
     var statusBadge = u.status === 'active' ? '<span class="badge badge-g">فعال</span>' : '<span class="badge badge-r">غیرفعال</span>';
     var inboundName = u.inbound_name || (u.inbound_id ? u.inbound_id.substring(0,8) : 'پیش‌فرض');
     html += '<tr>';
     html += '<td><strong>' + esc(u.username) + '</strong></td>';
     html += '<td>' + fmtBytes(used) + ' / ' + (limit ? fmtBytes(limit) : 'نامحدود') + '<div class="pbar"><div class="pbar-f" style="width:' + pct + '%"></div></div></td>';
     html += '<td>' + expText + '</td>';
-    html += '<td>' + (u.concurrent_connections || '۲') + '</td>';
+    html += '<td>' + (u.concurrent_connections || 0) + '</td>';
     html += '<td>' + statusBadge + '</td>';
     html += '<td><span class="badge badge-b">' + esc(inboundName) + '</span></td>';
     html += '<td><div class="act-row">';
@@ -1567,14 +1811,18 @@ function closeModal(id) { $id(id).classList.remove('show'); }
 // ─── Helpers ───
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtBytes(b) {
-  if (!b || b === 0) return '۰ B';
+  if (b === null || b === undefined || b === 0) return '۰ B';
   var u = ['B','KB','MB','GB','TB'], i = 0;
-  while (b >= 1024 && i < 4) { b /= 1024; i++; }
-  return b.toFixed(i === 0 ? 0 : 1) + ' ' + u[i];
+  var n = Number(b);
+  if (isNaN(n) || n < 0) return '۰ B';
+  while (n >= 1024 && i < 4) { n /= 1024; i++; }
+  return n.toFixed(i === 0 ? 0 : 1) + ' ' + u[i];
 }
 function fmtUptime(s) {
-  if (!s) return '۰s';
-  var d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+  if (s === null || s === undefined || s === 0) return '۰s';
+  var n = Number(s);
+  if (isNaN(n) || n < 0) return '۰s';
+  var d = Math.floor(n / 86400), h = Math.floor((n % 86400) / 3600), m = Math.floor((n % 3600) / 60);
   return (d ? d + 'd ' : '') + h + 'h ' + m + 'm';
 }
 
@@ -1666,12 +1914,247 @@ function rwBuildConfig(){
 function rwCopyCfg(){var t=rwBuiltConfigs.join('\n\n');if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){toast('Copied!','ok')});else toast('Copy failed','err')}
 function rwDownloadCfg(){var t=rwBuiltConfigs.join('\n\n');var b=new Blob([t],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='spider-configs.txt';a.click()}
 
-// --- Panel Audio (auto-play from static folder) ---
-function togglePanelAudio(){var p=$id('panel-audio-player');if($id('audio-autoplay').checked){p.play().catch(function(){})}else{p.pause()};localStorage.setItem('spider_audio', $id('audio-autoplay').checked?'1':'0')}
-(function initPanelAudio(){var p=$id('panel-audio-player');p.src='/static/music-panel.mp3';p.volume=0.3;var saved=localStorage.getItem('spider_audio');$id('audio-autoplay').checked=saved!=='0';if(saved!=='0'){p.play().catch(function(){})}})();
+// --- Panel Audio (random MP3 player from /static/uploads/) ---
+var audioFileList = [];
+var currentAudioIndex = -1;
+var audioShuffle = true;
+var audioRepeat = true;
+var audioInitialized = false;
+
+async function initPanelAudio() {
+  var p = $id('panel-audio-player');
+  p.volume = 0.3;
+  var saved = localStorage.getItem('spider_audio');
+  $id('audio-autoplay').checked = saved !== '0';
+  
+  try {
+    // Fetch list of MP3 files from /static/uploads/
+    var d = await fetch('/static/uploads/').then(function(r) { 
+      if (r.ok) return r.text(); 
+      throw new Error('Cannot list uploads');
+    });
+    // Parse HTML directory listing for .mp3 links (works with nginx/apache autoindex)
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(d, 'text/html');
+    var links = doc.querySelectorAll('a[href$=".mp3"]');
+    audioFileList = Array.from(links).map(function(a) {
+      var href = a.getAttribute('href');
+      if (href.startsWith('/')) return href;
+      return '/static/uploads/' + href;
+    });
+    if (audioFileList.length === 0) {
+      // Try alternative: just check if a single mp3 exists
+      var resp = await fetch('/static/music-panel.mp3', {method: 'HEAD'});
+      if (resp.ok) {
+        audioFileList = ['/static/music-panel.mp3'];
+      }
+    }
+  } catch(e) {
+    // Fallback to the old single file
+    var resp = await fetch('/static/music-panel.mp3', {method: 'HEAD'});
+    if (resp.ok) {
+      audioFileList = ['/static/music-panel.mp3'];
+    }
+  }
+  
+  if (audioFileList.length > 0) {
+    $id('audio-status').textContent = audioFileList.length + ' audio files loaded';
+    if (saved !== '0') {
+      playRandomAudio();
+    }
+    p.addEventListener('ended', function() {
+      if (audioRepeat) {
+        if (audioShuffle) {
+          playRandomAudio();
+        } else {
+          playNextAudio();
+        }
+      }
+    });
+  } else {
+    $id('audio-status').textContent = 'No audio files found';
+    $id('panel-audio-player').style.display = 'none';
+  }
+  audioInitialized = true;
+}
+
+function playRandomAudio() {
+  if (!audioFileList.length) return;
+  var idx = Math.floor(Math.random() * audioFileList.length);
+  currentAudioIndex = idx;
+  var p = $id('panel-audio-player');
+  var src = audioFileList[idx];
+  p.src = src;
+  p.play().catch(function() {});
+  $id('audio-current').textContent = src.split('/').pop();
+  $id('audio-status').textContent = 'Playing: ' + (idx + 1) + '/' + audioFileList.length;
+}
+
+function playNextAudio() {
+  if (!audioFileList.length) return;
+  currentAudioIndex = (currentAudioIndex + 1) % audioFileList.length;
+  var idx = currentAudioIndex;
+  var p = $id('panel-audio-player');
+  var src = audioFileList[idx];
+  p.src = src;
+  p.play().catch(function() {});
+  $id('audio-current').textContent = src.split('/').pop();
+  $id('audio-status').textContent = 'Playing: ' + (idx + 1) + '/' + audioFileList.length;
+}
+
+function togglePanelAudio() {
+  var p = $id('panel-audio-player');
+  if ($id('audio-autoplay').checked) {
+    if (!p.src || p.src === window.location.href) {
+      playRandomAudio();
+    } else {
+      p.play().catch(function(){});
+    }
+  } else {
+    p.pause();
+  }
+  localStorage.setItem('spider_audio', $id('audio-autoplay').checked ? '1' : '0');
+}
+
+function togglePlayAudio() {
+  var p = $id('panel-audio-player');
+  if (p.paused) {
+    if (!p.src || p.src === window.location.href) {
+      playRandomAudio();
+    } else {
+      p.play().catch(function(){});
+    }
+  } else {
+    p.pause();
+  }
+}
+
+function pauseAudio() {
+  $id('panel-audio-player').pause();
+}
+
+function toggleShuffle() {
+  audioShuffle = !audioShuffle;
+  toast('Shuffle ' + (audioShuffle ? 'ON' : 'OFF'), 'ok');
+}
+
+function toggleRepeat() {
+  audioRepeat = !audioRepeat;
+  toast('Repeat ' + (audioRepeat ? 'ON' : 'OFF'), 'ok');
+}
+
+// Init audio on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(initPanelAudio, 1000);
+});
 
 // Start neon bars when tab opens
 setTimeout(updateNeonBars, 500);
+
+// ─── Subscriptions Tab ───
+async function loadSubscriptions() {
+  var el = $id('subscriptions-container');
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt2)">🔄 بارگذاری...</div>';
+  try {
+    var d = await api('/api/subs');
+    if (!d || !d.subs || !d.subs.length) {
+      el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--txt2)">❌ هیچ اشتراکی یافت نشد</div>';
+      // Also clear the all-subscriptions list
+      var listEl = $id('all-subscriptions-list');
+      if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt2);font-size:12px">هیچ اشتراکی وجود ندارد</div>';
+      return;
+    }
+    var h = '';
+    d.subs.forEach(function(s) {
+      var isMix = s.is_mix || false;
+      var mixBadge = isMix ? '<span class="badge" style="background:rgba(234,179,8,.15);color:#fbbf24;font-size:10px;padding:2px 8px;border-radius:4px">MIX</span>' : '';
+      var clientNames = s.link_ids ? s.link_ids.map(function(lid) {
+        return lid.slice(0,8);
+      }) : [];
+      h += '<div class="sub-card">' +
+        '<div class="sub-card-h"><span class="sub-card-name">' + esc(s.name) + ' ' + mixBadge + '</span>' +
+        '<span style="font-size:11px;color:var(--txt2)">ترافیک: ' + (s.total_used_fmt || '۰ B') + '</span></div>' +
+        '<input class="sub-link" value="' + esc(s.sub_url || '') + '" readonly onclick="this.select();toast(\'لینک کپی شد\',\'ok\')">';
+      if (s.public_url) {
+        h += '<input class="sub-link" value="' + esc(s.public_url || '') + '" readonly onclick="this.select();toast(\'لینک عمومی کپی شد\',\'ok\')" style="margin-bottom:4px">';
+      }
+      h += '<div class="sub-acts">' +
+        '<button class="btn btn-sm btn-b" onclick="copyToClipboard(\'' + esc(s.sub_url || '') + '\',\'ساب لینک کپی شد\')">📋 کپی لینک</button>' +
+        '<button class="btn btn-sm btn-g" onclick="copyToClipboard(\'' + esc(s.public_url || '') + '\',\'لینک عمومی کپی شد\')">🌐 عمومی</button>' +
+        '<button class="btn btn-sm btn-r" onclick="deleteSubscription(\'' + s.sub_id + '\',\'' + esc(s.name) + '\')">🗑️ حذف</button></div></div>';
+    });
+    el.innerHTML = h;
+    // Also load the detailed subscription list with user counts
+    loadAllSubscriptions();
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red)">خطا: ' + esc(e.message) + '</div>';
+  }
+}
+
+// ─── All Subscriptions with User Counts ───
+async function loadAllSubscriptions() {
+  var el = $id('all-subscriptions-list');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt2);font-size:12px">🔄 بارگذاری...</div>';
+  try {
+    var d = await api('/api/subscriptions');
+    if (!d || !d.subscriptions || !d.subscriptions.length) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt2);font-size:12px">هیچ اشتراکی وجود ندارد</div>';
+      return;
+    }
+    var h = '';
+    d.subscriptions.forEach(function(s) {
+      var isMix = s.is_mix || false;
+      var mixBadge = isMix ? '<span class="badge" style="background:rgba(234,179,8,.15);color:#fbbf24;font-size:10px;padding:2px 8px;border-radius:4px">MIX</span>' : '';
+      var connectedCount = s.connected_users || 0;
+      var clientNamesText = (s.client_names && s.client_names.length) ? s.client_names.join(', ') : '—';
+
+      h += '<div class="sub-card" style="margin-bottom:10px">' +
+        '<div class="sub-card-h"><span class="sub-card-name">' + esc(s.name) + ' ' + mixBadge + '</span>' +
+        '<span style="font-size:12px;color:var(--green);font-weight:700">تعداد کاربران وصل: ' + connectedCount + '</span></div>' +
+        '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">' +
+          '<div style="background:var(--bg3);border-radius:8px;padding:8px 12px;text-align:center;min-width:80px">' +
+            '<div style="font-size:18px;font-weight:700;color:var(--neon)">' + (s.links_count || 0) + '</div>' +
+            '<div style="font-size:10px;color:var(--txt2)">لینک</div>' +
+          '</div>' +
+          '<div style="background:var(--bg3);border-radius:8px;padding:8px 12px;text-align:center;min-width:80px">' +
+            '<div style="font-size:18px;font-weight:700;color:var(--green)">' + connectedCount + '</div>' +
+            '<div style="font-size:10px;color:var(--txt2)">کاربر وصل</div>' +
+          '</div>' +
+          '<div style="background:var(--bg3);border-radius:8px;padding:8px 12px;text-align:center;min-width:80px">' +
+            '<div style="font-size:18px;font-weight:700;color:var(--purple)">' + (s.active_count || 0) + '</div>' +
+            '<div style="font-size:10px;color:var(--txt2)">فعال</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px">📎 کلاینت‌ها: ' + esc(clientNamesText) + '</div>' +
+        '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px">📦 ترافیک: ' + (s.total_used_fmt || '۰ B') + '</div>' +
+        '<input class="sub-link" value="' + esc(s.sub_url || '') + '" readonly onclick="this.select();toast(\'لینک کپی شد\',\'ok\')">';
+      if (s.public_url) {
+        h += '<input class="sub-link" value="' + esc(s.public_url || '') + '" readonly onclick="this.select();toast(\'لینک عمومی کپی شد\',\'ok\')" style="margin-bottom:4px">';
+      }
+      h += '<div class="sub-acts">' +
+        '<button class="btn btn-sm btn-b" onclick="copyToClipboard(\'' + esc(s.sub_url || '') + '\',\'ساب لینک کپی شد\')">📋 کپی لینک</button>' +
+        '<button class="btn btn-sm btn-g" onclick="copyToClipboard(\'' + esc(s.public_url || '') + '\',\'لینک عمومی کپی شد\')">🌐 عمومی</button>' +
+        '<button class="btn btn-sm btn-r" onclick="deleteSubscription(\'' + s.sub_id + '\',\'' + esc(s.name) + '\')">🗑️ حذف</button></div></div>';
+    });
+    el.innerHTML = h;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:12px">خطا: ' + esc(e.message) + '</div>';
+  }
+}
+
+async function deleteSubscription(subId, name) {
+  if (!confirm('آیا از حذف اشتراک «' + name + '» اطمینان دارید؟')) return;
+  try {
+    var r = await api('/api/subs/' + subId, { method: 'DELETE' });
+    toast('اشتراک حذف شد', 'ok');
+    loadSubscriptions();
+  } catch(e) {
+    toast('خطا: ' + e.message, 'err');
+  }
+}
+
+function refreshSubscriptions() { loadSubscriptions(); }
 
 </script>
 </body>
