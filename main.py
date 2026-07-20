@@ -3508,6 +3508,24 @@ async def remove_audio(_=Depends(require_auth)):
     return {"ok": True}
 
 
+# ── MP3 Listing API ─────────────────────────────────────────────────────────
+@app.get("/api/audio/list")
+async def list_audio_files():
+    """List all MP3 files in the uploads directory."""
+    import glob
+    mp3_files = sorted(glob.glob(_os.path.join(UPLOAD_DIR, "*.mp3")) +
+                       glob.glob(_os.path.join(_STATIC_DIR, "*.mp3")))
+    files = []
+    for mp3 in mp3_files:
+        rel = _os.path.relpath(mp3, _STATIC_DIR)
+        files.append({
+            "path": f"/static/{rel}",
+            "name": _os.path.basename(mp3),
+            "size": _os.path.getsize(mp3)
+        })
+    return {"files": files, "count": len(files)}
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # IP SCANNER - Railway IPs, Ping Tests, Current IP
 # ══════════════════════════════════════════════════════════════════════════════

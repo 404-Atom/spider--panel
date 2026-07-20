@@ -70,6 +70,11 @@ body{
 /* Particles canvas */
 #particles{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4}
 
+/* Tubes Cursor BG */
+#tubes-app{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .5s ease}
+#tubes-app.show{opacity:1}
+#tubes-canvas{display:block;width:100%;height:100%}
+
 /* Login */
 .login-wrap{
   display:flex;align-items:center;justify-content:center;
@@ -201,6 +206,14 @@ body{
 .btn-r{background:rgba(255,23,68,.1);color:var(--red)}.btn-r:hover{background:rgba(255,23,68,.2)}
 .btn-gr{background:rgba(0,230,118,.1);color:var(--green)}.btn-b{background:rgba(68,138,255,.1);color:var(--blue)}
 .btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
+/* Music buttons */
+.btn-music{transition:all .25s cubic-bezier(.25,.46,.45,.94);position:relative;overflow:hidden}
+.btn-music::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.15);border-radius:50%;transform:translate(-50%,-50%);transition:width .4s,height .4s}
+.btn-music:hover::before{width:200%;height:200%}
+.btn-music:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(var(--neon-rgb),.25);filter:brightness(1.15)}
+.btn-music:active{transform:scale(.95)}
+.btn-music.active{animation:btnPulse 1.5s ease-in-out infinite}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 8px rgba(var(--neon-rgb),.3)}50%{box-shadow:0 0 20px rgba(var(--neon-rgb),.6),0 0 40px rgba(var(--neon-rgb),.2)}}
 .btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:10px}
 /* enhance stat cards with hover glass */
 .stat:hover{box-shadow:0 0 30px rgba(var(--neon-rgb),.15),var(--glow);background:rgba(var(--neon-rgb),.02)}
@@ -395,6 +408,7 @@ tr{animation:fadeIn .3s ease}
 </head>
 <body>
 
+<div id="tubes-app"><canvas id="tubes-canvas"></canvas></div>
 <canvas id="particles"></canvas>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -441,10 +455,7 @@ tr{animation:fadeIn .3s ease}
         <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
         اینباندها
       </div>
-      <div class="nav-item" onclick="switchTab('subscriptions',this)">
-        <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16M8 6h.5M8 10h.5M8 14h.5M8 18h.5M16 6h.5M16 10h.5M16 14h.5M16 18h.5"/></svg></span>
-        Subscriptions
-      </div>
+      <!-- Subscriptions removed per user request -->
       <div class="nav-item" onclick="switchTab('telegram',this)">
         <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 9v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 9z"/><path d="m3.15 9.88 7.51 4.64a1 1 0 0 0 1.13-.31l5.28-5.28"/><path d="m12.72 11.08 5.84 3.56"/><path d="m9 9.5 5.5 5.5"/></svg></span>
         Telegram Bot
@@ -616,10 +627,10 @@ tr{animation:fadeIn .3s ease}
               Auto-play music
             </label>
             <div style="display:flex;gap:4px">
-              <button class="btn btn-sm btn-g" onclick="togglePlayAudio()">▶ Play</button>
-              <button class="btn btn-sm btn-g" onclick="toggleShuffle()">🔀 Shuffle</button>
-              <button class="btn btn-sm btn-g" onclick="toggleRepeat()">🔁 Repeat</button>
-              <button class="btn btn-sm btn-r" onclick="pauseAudio()">■ Pause</button>
+              <button class="btn btn-sm btn-g btn-music" id="btn-play" onclick="togglePlayAudio()">▶ Play</button>
+              <button class="btn btn-sm btn-g btn-music" id="btn-shuffle" onclick="toggleShuffle()">🔀 Shuffle</button>
+              <button class="btn btn-sm btn-g btn-music" id="btn-repeat" onclick="toggleRepeat()">🔁 Repeat</button>
+              <button class="btn btn-sm btn-r btn-music" onclick="pauseAudio()">■ Pause</button>
             </div>
           </div>
           <div style="margin-top:8px;font-size:11px;color:var(--txt2)">
@@ -1001,7 +1012,7 @@ function switchTab(tab, el) {
   if (tab === 'dashboard') loadDashboard();
   if (tab === 'users') loadUsers();
   if (tab === 'inbounds') loadInbounds();
-  if (tab === 'subscriptions') loadSubscriptions();
+  // Subscription tab removed
   if (tab === 'telegram') loadTelegramSettings();
   // Close sidebar on mobile
   closeSidebar();
@@ -1928,33 +1939,16 @@ async function initPanelAudio() {
   $id('audio-autoplay').checked = saved !== '0';
   
   try {
-    // Fetch list of MP3 files from /static/uploads/
-    var d = await fetch('/static/uploads/').then(function(r) { 
-      if (r.ok) return r.text(); 
-      throw new Error('Cannot list uploads');
-    });
-    // Parse HTML directory listing for .mp3 links (works with nginx/apache autoindex)
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(d, 'text/html');
-    var links = doc.querySelectorAll('a[href$=".mp3"]');
-    audioFileList = Array.from(links).map(function(a) {
-      var href = a.getAttribute('href');
-      if (href.startsWith('/')) return href;
-      return '/static/uploads/' + href;
-    });
-    if (audioFileList.length === 0) {
-      // Try alternative: just check if a single mp3 exists
-      var resp = await fetch('/static/music-panel.mp3', {method: 'HEAD'});
-      if (resp.ok) {
-        audioFileList = ['/static/music-panel.mp3'];
-      }
+    // Fetch MP3 files from the API
+    var resp = await fetch('/api/audio/list');
+    if (resp.ok) {
+      var data = await resp.json();
+      audioFileList = data.files.map(function(f) { return f.path; });
     }
   } catch(e) {
-    // Fallback to the old single file
-    var resp = await fetch('/static/music-panel.mp3', {method: 'HEAD'});
-    if (resp.ok) {
-      audioFileList = ['/static/music-panel.mp3'];
-    }
+    // Fallback to old single file
+    var resp2 = await fetch('/static/music-panel.mp3', {method: 'HEAD'});
+    if (resp2.ok) audioFileList = ['/static/music-panel.mp3'];
   }
   
   if (audioFileList.length > 0) {
@@ -2155,6 +2149,38 @@ async function deleteSubscription(subId, name) {
 }
 
 function refreshSubscriptions() { loadSubscriptions(); }
+
+// ─── Tubes Cursor 3D Background ───
+(function initTubes() {
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js';
+  script.onload = function() {
+    if (typeof TubesCursor === 'undefined') return;
+    var app = TubesCursor(document.getElementById('tubes-canvas'), {
+      tubes: {
+        colors: ['#ff1744', '#7c4dff', '#448aff'],
+        lights: {
+          intensity: 200,
+          colors: ['#00e676', '#ffab00', '#ff1744', '#448aff']
+        }
+      }
+    });
+    app.tubes.setColors(['#ff1744', '#7c4dff', '#448aff']);
+    document.getElementById('tubes-app').classList.add('show');
+    document.body.addEventListener('click', function() {
+      var c = ['#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+               '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+               '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0')];
+      var l = ['#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+               '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+               '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+               '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0')];
+      app.tubes.setColors(c);
+      app.tubes.setLightsColors(l);
+    });
+  };
+  document.head.appendChild(script);
+})();
 
 </script>
 </body>
